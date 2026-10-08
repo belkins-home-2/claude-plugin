@@ -13,9 +13,10 @@ Windows no WSL is needed), open it, and give it this one line:
 Set me up for Belkins Home 2.0: follow https://raw.githubusercontent.com/belkins-home-2/claude-plugin/main/SETUP.md
 ```
 
-Claude installs whatever is missing (Node, git), the plugin, `bh2` and your work folder
-`~/work/belkins-home-2`. Then it gives you a link: open it, sign in to Belkins Home as you always do,
-check the code and press **Connect**. You type no password into Claude, and nobody copies a token.
+Claude installs whatever is missing (Node, git), the plugin, `bh2` and your work folder,
+`~/work/belkins-home-2`, or `~/bh2-work` when that folder already holds other files. Then it gives
+you a link: open it, sign in to Belkins Home as you always do, check the code and press **Connect**.
+You type no password into Claude, and nobody copies a token.
 
 In Auto mode, Claude Code's safety check stops two of these steps, installing the plugin and saving
 your sign-in, because only you may approve them. When that happens Claude asks you to switch the
@@ -34,8 +35,9 @@ irm https://raw.githubusercontent.com/belkins-home-2/claude-plugin/main/install.
 
 ## Every day
 
-Open Claude Code in `~/work/belkins-home-2` and name the client in your first message. Claude picks
-the project, reads what is there and what the last session left, and works through `bh2`.
+Open Claude Code in your work folder (`~/work/belkins-home-2`, or the one Claude named at the end of
+setup) and name the client in your first message. Claude picks the project, reads what is there and
+what the last session left, and works through `bh2`.
 
 ## Updating
 

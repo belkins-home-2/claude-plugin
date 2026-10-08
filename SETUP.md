@@ -21,6 +21,8 @@ Rules for the whole setup:
   run yourself.
 - Do not clone or read any repository, and do not write code. If a step fails in a way this file
   does not cover, stop and show the person the exact error.
+- **Never delete, move or tidy a folder or a file of the person's**, not even to start over. Setup
+  itself never replaces one.
 
 ## 1. Install
 
@@ -80,9 +82,13 @@ of `add`.
 node $HOME/.claude/plugins/marketplaces/belkins-home-2/plugin/cli/cli.ts setup
 ```
 
-It copies the work folder to `~/work/belkins-home-2` and puts `bh2` on the PATH of the person's own
-terminal; running it again changes nothing. This session's shell does not see it yet: **in the
-steps below, `bh2` means `node $HOME/.claude/plugins/marketplaces/belkins-home-2/plugin/cli/cli.ts`**.
+It makes the person's work folder and puts `bh2` on the PATH of their own terminal; running it again
+changes nothing. The work folder is `~/work/belkins-home-2`, unless a folder there already holds
+other files (a developer may keep the Belkins Home code in it): setup leaves that one as it is and
+makes the work folder in `~/bh2-work` instead. Its answer names the work folder (`workspace`) and
+the folder it left alone (`taken`); step 4 needs both. If it answers `folder_taken`, show the person
+the message and stop. This session's shell does not see `bh2` yet: **in the steps below, `bh2`
+means `node $HOME/.claude/plugins/marketplaces/belkins-home-2/plugin/cli/cli.ts`**.
 
 ## 2. Connect `bh2` to their account
 
@@ -117,7 +123,9 @@ bh2 projects
 
 ## 4. Done
 
-Tell the person, in a few lines: setup is complete. From now on they open Claude Code in
-`~/work/belkins-home-2` (`cd ~/work/belkins-home-2 && claude`, or choose that folder in the desktop
-app) and name the client in their first message. The plugin updates itself there. If Claude Code's
-safety check ever refuses a `bh2` step there, the same goes as in setup: Manual, then Allow.
+Tell the person, in a few lines: setup is complete. From now on they open Claude Code in their work
+folder, the `workspace` from step 1d (`cd <workspace> && claude`, or choose that folder in the
+desktop app), and name the client in their first message. When setup listed a `taken` folder, add
+one sentence: that folder already held other files, so setup left it as it was and made their work
+folder in `<workspace>`. The plugin updates itself there. If Claude Code's safety check ever refuses
+a `bh2` step there, the same goes as in setup: Manual, then Allow.

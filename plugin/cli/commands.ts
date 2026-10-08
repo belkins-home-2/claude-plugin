@@ -29,7 +29,8 @@ export const USAGE = `bh2 <command> [options]: JSON on stdout. A refusal goes to
 with exit 1 (2 for a misused command); the hint says what to do next.
 
   setup [--dir <path>]                 once, after the plugin is installed: the work folder
-                                        (~/work/belkins-home-2) and bh2 on your terminal's PATH
+                                        (~/work/belkins-home-2, or ~/bh2-work when that one holds
+                                        other files) and bh2 on your terminal's PATH
   login [--api <url>] [--no-browser]   connect this computer: prints a link to approve in Belkins Home.
                                         In a terminal it waits; elsewhere run bh2 login --wait after
                                         the person pressed Connect

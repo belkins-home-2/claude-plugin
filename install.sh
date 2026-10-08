@@ -4,12 +4,12 @@
 #   curl -fsSL https://raw.githubusercontent.com/belkins-home-2/claude-plugin/main/install.sh | bash
 #
 # Installs what is missing (git, Node 22.18+, Claude Code), then the plugin, puts bh2 on the PATH,
-# copies the work folder to ~/work/belkins-home-2 and, in a terminal, connects bh2 through a link to
-# approve in Belkins Home. Every step checks first, so running it again only finishes what is left.
+# copies the work folder to ~/work/belkins-home-2 (~/bh2-work when that folder holds other files)
+# and, in a terminal, connects bh2 through a link to approve in Belkins Home. Every step checks
+# first, so running it again only finishes what is left.
 set -euo pipefail
 
 marketplace=$HOME/.claude/plugins/marketplaces/belkins-home-2
-workspace=$HOME/work/belkins-home-2
 export PATH=$HOME/.local/bin:$PATH
 
 step() { printf '\033[36m==> %s\033[0m\n' "$1"; }
@@ -73,7 +73,9 @@ claude plugin install belkins-home-2@belkins-home-2
 [ -x "$marketplace/plugin/bin/bh2" ] || fail "the plugin did not install: no $marketplace/plugin/bin/bh2"
 
 step 'The work folder, and bh2 on the PATH'
-node --disable-warning=ExperimentalWarning "$marketplace/plugin/cli/cli.ts" setup >/dev/null
+setup=$(node --disable-warning=ExperimentalWarning "$marketplace/plugin/cli/cli.ts" setup)
+workspace=$(node -p 'JSON.parse(process.argv[1]).workspace' "$setup")
+taken=$(node -p '(JSON.parse(process.argv[1]).taken ?? []).join(", ")' "$setup")
 
 step 'Connect bh2 to your account'
 if bh2 whoami >/dev/null 2>&1; then
@@ -84,4 +86,6 @@ else
   echo 'Run "bh2 login" to connect.'
 fi
 
-printf '\n\033[32mDone. Open Claude Code in %s and name the client in your first message.\033[0m\n' "$workspace"
+printf '\n'
+[ -z "$taken" ] || printf '%s already holds other files, so setup left it as it is.\n' "$taken"
+printf '\033[32mDone. Open Claude Code in %s and name the client in your first message.\033[0m\n' "$workspace"

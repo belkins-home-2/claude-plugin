@@ -3,8 +3,9 @@
 #   irm https://raw.githubusercontent.com/belkins-home-2/claude-plugin/main/install.ps1 | iex
 #
 # Installs what is missing (Node 22.18+, Git, Claude Code), then the plugin, puts bh2 on the PATH,
-# copies the work folder to ~\work\belkins-home-2 and, in a console, connects bh2 through a link to
-# approve in Belkins Home. Every step checks first, so running it again only finishes what is left.
+# copies the work folder to ~\work\belkins-home-2 (~\bh2-work when that folder holds other files)
+# and, in a console, connects bh2 through a link to approve in Belkins Home. Every step checks
+# first, so running it again only finishes what is left.
 $ErrorActionPreference = 'Stop'
 
 $Marketplace = Join-Path $HOME '.claude\plugins\marketplaces\belkins-home-2'
@@ -63,8 +64,9 @@ $Bin = Join-Path $Marketplace 'plugin\bin'
 if (-not (Test-Path (Join-Path $Bin 'bh2.cmd'))) { throw "the plugin did not install: no $Bin\bh2.cmd" }
 
 Step 'The work folder, and bh2 on the PATH'
-node --disable-warning=ExperimentalWarning (Join-Path $Marketplace 'plugin\cli\cli.ts') setup
+$Setup = node --disable-warning=ExperimentalWarning (Join-Path $Marketplace 'plugin\cli\cli.ts') setup | Out-String
 if ($LASTEXITCODE -ne 0) { throw 'bh2 setup failed: run this again' }
+$Setup = $Setup | ConvertFrom-Json
 Refresh-Path
 
 Step 'Connect bh2 to your account'
@@ -81,4 +83,5 @@ if ($LASTEXITCODE -eq 0) {
 }
 
 Write-Host ''
-Write-Host "Done. Open Claude Code in $(Join-Path $HOME 'work\belkins-home-2') and name the client in your first message." -ForegroundColor Green
+if ($Setup.taken) { Write-Host "$($Setup.taken -join ', ') already holds other files, so setup left it as it is." }
+Write-Host "Done. Open Claude Code in $($Setup.workspace) and name the client in your first message." -ForegroundColor Green
