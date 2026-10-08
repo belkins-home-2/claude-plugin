@@ -7,6 +7,14 @@ They are not engineers: explain what they need to click, never what a command do
 
 Rules for the whole setup:
 
+- **When Claude Code's safety check refuses a step, the person approves it in Manual mode.** Work in
+  the mode they are in. In Auto mode the check refuses two steps, installing the plugin (1c) and
+  saving the sign-in (`bh2 login --wait`, step 2), and the person cannot approve them there. When a
+  step is refused, stop and tell them, in one short message: switch the permission mode to
+  **Manual** (the mode selector next to Send in the desktop app; Shift+Tab in the terminal) and say
+  "continue". Then run the same step again: Manual asks them, they click Allow, and they may switch
+  back to Auto. Never offer another way around the check: no Terminal commands for them to paste,
+  no permission rules.
 - **Never ask for a password or a token in chat.** The person connects by pressing Connect on a page
   of Belkins Home (step 2); nobody copies a token.
 - Tell the person before anything that needs their password or opens a system window; the rest you
@@ -79,7 +87,7 @@ steps below, `bh2` means `node $HOME/.claude/plugins/marketplaces/belkins-home-2
 ## 2. Connect `bh2` to their account
 
 The person signs in with their own Belkins Home account: the one they use for the app every day.
-Only active Belkins and Revit staff can connect.
+Only active Belkins, Revit and Test staff can connect.
 
 Run `bh2 login`. It answers with a link and a code:
 
@@ -104,11 +112,12 @@ bh2 projects
 
 - `whoami` shows their email address: connected.
 - `401`, `not_signed_in` or `token_not_valid`: back to step 2.
-- `no_access`: their account is not active Belkins or Revit staff; they ask an admin.
+- `no_access`: their account is not active Belkins, Revit or Test staff; they ask an admin.
 - `projects` is empty: they are on no project's team yet; their manager adds them in Belkins Home.
 
 ## 4. Done
 
 Tell the person, in a few lines: setup is complete. From now on they open Claude Code in
 `~/work/belkins-home-2` (`cd ~/work/belkins-home-2 && claude`, or choose that folder in the desktop
-app) and name the client in their first message. The plugin updates itself there.
+app) and name the client in their first message. The plugin updates itself there. If Claude Code's
+safety check ever refuses a `bh2` step there, the same goes as in setup: Manual, then Allow.

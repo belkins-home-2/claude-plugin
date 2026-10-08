@@ -14,7 +14,7 @@ assume an earlier session did or did not do something; read it.
 
 1. `bh2 whoami`: the connection works, and as whom.
     - `not_signed_in`, `token_not_valid`, `token_expired`: connect first (next section).
-    - `no_access`: the person's Belkins Home account is not active Belkins or Revit staff. Tell them
+    - `no_access`: the person's Belkins Home account is not active Belkins, Revit or Test staff. Tell them
       to ask an admin of their organization, and stop.
     - `no_api`: bh2 does not know which Belkins Home to talk to. Ask the person for the address the
       team gave them, then `bh2 login --api <url>`.

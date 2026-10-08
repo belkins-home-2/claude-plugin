@@ -17,6 +17,11 @@ Claude installs whatever is missing (Node, git), the plugin, `bh2` and your work
 `~/work/belkins-home-2`. Then it gives you a link: open it, sign in to Belkins Home as you always do,
 check the code and press **Connect**. You type no password into Claude, and nobody copies a token.
 
+In Auto mode, Claude Code's safety check stops two of these steps, installing the plugin and saving
+your sign-in, because only you may approve them. When that happens Claude asks you to switch the
+permission mode to **Manual** (the mode selector next to Send in the desktop app; Shift+Tab in the
+terminal) and say "continue"; you then approve the step with a click and can switch back to Auto.
+
 Without Claude Code yet, one command does the same, Claude Code included:
 
 ```sh
