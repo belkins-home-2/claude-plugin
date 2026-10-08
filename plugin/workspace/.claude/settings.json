@@ -1,0 +1,18 @@
+{
+	"permissions": {
+		"allow": ["Bash(bh2)", "Bash(bh2 *)"],
+		"deny": ["Bash(git clone *)", "Bash(gh repo clone *)"]
+	},
+	"extraKnownMarketplaces": {
+		"belkins-home-2": {
+			"source": {
+				"source": "git",
+				"url": "https://github.com/belkins-home-2/claude-plugin.git"
+			},
+			"autoUpdate": true
+		}
+	},
+	"enabledPlugins": {
+		"belkins-home-2@belkins-home-2": true
+	}
+}

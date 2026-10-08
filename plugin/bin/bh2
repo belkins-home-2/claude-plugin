@@ -1,0 +1,44 @@
+#!/bin/sh
+# bh2: the team's command for Belkins Home 2.0, reachable wherever this plugin is installed.
+#
+# The command is plugin/cli/cli.ts: TypeScript that Node 22.18 or newer runs as it is, with no
+# dependencies and nothing to build. Claude Code puts this bin/ on its shell's PATH while the plugin
+# is enabled; `bh2 setup` links this file onto the person's own terminal PATH too. BH2_CLI overrides
+# the path to cli.ts.
+set -e
+
+script=$0
+while [ -L "$script" ]; do
+  link=$(readlink "$script")
+  case $link in
+  /*) script=$link ;;
+  *) script=$(dirname "$script")/$link ;;
+  esac
+done
+plugin=$(cd "$(dirname "$script")/.." && pwd)
+cli=${BH2_CLI:-$plugin/cli/cli.ts}
+
+if [ ! -f "$cli" ]; then
+  echo "bh2: no command at $cli" >&2
+  echo "hint: install the plugin again (README.md), or set BH2_CLI to cli.ts" >&2
+  exit 2
+fi
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "bh2: Node is not installed" >&2
+  echo "hint: bh2 runs on Node 22.18 or newer - https://nodejs.org" >&2
+  exit 2
+fi
+
+version=$(node -v)
+major=${version#v}
+major=${major%%.*}
+rest=${version#v*.}
+minor=${rest%%.*}
+if [ "$major" -lt 22 ] || { [ "$major" -eq 22 ] && [ "$minor" -lt 18 ]; }; then
+  echo "bh2: Node $version is too old" >&2
+  echo "hint: bh2 is TypeScript run as it is; Node 22.18 or newer strips the types" >&2
+  exit 2
+fi
+
+exec node --disable-warning=ExperimentalWarning "$cli" "$@"

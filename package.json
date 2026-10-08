@@ -1,0 +1,6 @@
+{
+	"name": "belkins-home-2-plugin-repo",
+	"private": true,
+	"description": "The repository around the plugin: its tests and setup files. The plugin is plugin/.",
+	"type": "module"
+}

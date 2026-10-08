@@ -1,0 +1,9 @@
+{
+	"name": "belkins-home-2-plugin",
+	"private": true,
+	"description": "The team's Claude Code plugin for Belkins Home 2.0: the bh2 command and its skills. Nothing to install or build: Node runs the TypeScript as it is.",
+	"type": "module",
+	"engines": {
+		"node": ">=22.18"
+	}
+}

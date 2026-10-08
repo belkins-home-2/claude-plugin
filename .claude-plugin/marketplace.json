@@ -1,0 +1,12 @@
+{
+	"name": "belkins-home-2",
+	"description": "The Belkins team's Claude Code plugin for working Belkins Home 2.0 client projects.",
+	"owner": { "name": "Belkins" },
+	"plugins": [
+		{
+			"name": "belkins-home-2",
+			"source": "./plugin",
+			"description": "The bh2 command and the skills for working a Belkins Home 2.0 project in Claude Code."
+		}
+	]
+}
