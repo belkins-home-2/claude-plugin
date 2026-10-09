@@ -42,10 +42,16 @@ what the last session left, and works through `bh2`.
 ## Updating
 
 Nothing to do: Claude Code started in the work folder keeps the plugin current by itself. A new
-version arrives in the background and applies from the next session. By hand, any time:
+version arrives in the background after your first message and applies from the next session. The
+folder's settings turn plugin updates on (`FORCE_AUTOUPDATE_PLUGINS`), which the Claude desktop app
+otherwise switches off.
+
+A work folder made by an earlier setup lacks that switch: update by hand once, then run
+`bh2 setup` again to add it. By hand, any time:
 
 ```sh
 claude plugin marketplace update belkins-home-2
+claude plugin update belkins-home-2@belkins-home-2
 ```
 
 ## Something is wrong

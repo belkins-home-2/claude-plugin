@@ -14,5 +14,8 @@
 	},
 	"enabledPlugins": {
 		"belkins-home-2@belkins-home-2": true
+	},
+	"env": {
+		"FORCE_AUTOUPDATE_PLUGINS": "1"
 	}
 }

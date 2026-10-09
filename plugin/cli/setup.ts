@@ -16,8 +16,12 @@ import { fileURLToPath } from 'node:url'
 
 import { Bh2Error } from './client.ts'
 
-/** The settings keys the template owns: the marketplace, kept up to date, and the plugin in it. */
-const PLUGIN_KEYS = ['extraKnownMarketplaces', 'enabledPlugins'] as const
+/**
+ * The settings keys the template owns: the marketplace, kept up to date; the plugin in it; and, in
+ * `env`, FORCE_AUTOUPDATE_PLUGINS. The Claude desktop app starts Claude Code with
+ * DISABLE_AUTOUPDATER=1, which also stops plugin updates unless that switch is set.
+ */
+const PLUGIN_KEYS = ['extraKnownMarketplaces', 'enabledPlugins', 'env'] as const
 
 /**
  * The first line of every CLAUDE.md the template has shipped with: how setup knows a folder it made.
@@ -129,8 +133,9 @@ async function folderState(folder: string): Promise<'ours' | 'free' | 'taken'> {
 
 /**
  * The template's plugin entries written into the folder's .claude/settings.json, so Claude Code
- * started there keeps the plugin current by itself. Everything else in the file (permissions a
- * person added) is left as it is.
+ * started there keeps the plugin current by itself, in the desktop app too. A folder made before
+ * an entry existed gets it here. Everything else in the file (permissions, or variables a person
+ * added) is left as it is.
  */
 async function pluginSettings(template: string, target: string): Promise<'updated' | 'kept'> {
 	const file = join(target, '.claude', 'settings.json')
