@@ -1,8 +1,8 @@
 # Judging a company
 
-A verdict is what the person reads on the search's page, and what decides whether a company goes
-into the project. It must be checkable: a reason someone can verify in a minute, and evidence for
-every fit.
+A verdict is what the person reads on the search's page, and what decides whether a company's
+people can be saved: a fit company joins the project with its first person. It must be checkable:
+a reason someone can verify in a minute, and evidence for every fit.
 
 ## The test
 
@@ -55,5 +55,5 @@ Judge the whole page, save its verdicts in one `bh2 companies save`, then go on.
 what keeps the next page new: the server leaves judged companies out of the next Generect call and
 out of `bh2 db companies`.
 
-Judging a company again replaces its verdict. A company that turns out not to fit after it went
-into the project stays there: say so in the hand-over.
+Judging a company again replaces its verdict. A company that turns out not to fit after its
+people were saved stays in the project with them: say so in the hand-over.

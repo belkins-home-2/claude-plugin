@@ -28,7 +28,7 @@ returns its title, its text and its links.
 
 A team page gives names and titles. To save a person you need their row:
 
-1. Their company must be in the project (a fit verdict first).
+1. Their company must be judged fit (or be in the project already).
 2. Find their profile: Generect people inside that company
    (`/search/realtime/company-leads/` with a persona for their title, `limit_by` 1–3), or Apollo
    `/people/match` with their name and the company's domain.

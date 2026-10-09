@@ -1,6 +1,6 @@
 ---
 name: smart-search
-description: Finds the companies and people a person asks for on a Belkins Home 2.0 client project with a bh2 smart search - looks in our own database first, plans what to buy from Generect (and Apollo, and web pages) with a budget the person approves in Belkins Home, judges every company with a reason, and saves the fit companies and their people into the project. Use whenever the person asks to find, build or add a list of companies, leads, contacts or people for a client, to look on a directory, exhibitor, member or team page, or to continue or check a smart search.
+description: Finds the companies and people a person asks for on a Belkins Home 2.0 client project with a bh2 smart search - looks in our own database first, plans what to buy from Generect (and Apollo, and web pages) with a budget the person approves in Belkins Home, judges every company with a reason, and saves the people at the fit companies into the project, each with their company. Use whenever the person asks to find, build or add a list of companies, leads, contacts or people for a client, to look on a directory, exhibitor, member or team page, or to continue or check a smart search.
 ---
 
 # Smart search
@@ -50,8 +50,10 @@ Read `bh2 brief` first (the getting-started skill). Everything below acts on the
    listed on a web page, see references/web-pages.md.
 6. **Judge every company you looked at** (references/judging.md): `fit`, `not_fit` or `unsure`,
    with a one-sentence reason a person can check, and evidence for a fit. Save in batches of up to
-   500: `bh2 companies save <search> --file clients/<project>/<search>-verdicts.json`. Fit ones go
-   into the project; the rest are kept on the search's page and are never bought again.
+   500: `bh2 companies save <search> --file clients/<project>/<search>-verdicts.json`. Every
+   verdict is kept on the search's page, and a judged company is never bought again. A verdict
+   adds nothing to the project: a fit company joins it with the first person you save there
+   (step 8), so the project holds only companies with a lead.
 7. **Find people** at the fit companies. Our database first: `bh2 db people --company <companyId> …
 --title …`. Then Generect:
     - people inside listed companies, up to 50 companies a call: `/search/realtime/company-leads/`
@@ -62,7 +64,8 @@ Read `bh2 brief` first (the getting-started skill). Everything below acts on the
       `updated_at` (references/generect.md).
 8. **Save the people**: `bh2 people save <search> --file clients/<project>/<search>-people.json`,
    a list of `{"contactId"}` (from `bh2 db people`) or `{"callId", "salesId"}` (from a bought
-   answer). A person goes in only under a company the project holds: save the company first.
+   answer). A person goes in only under a company the project holds or one you judged fit: save
+   the verdict first, and the company joins the project with them.
    When an Apollo match or a page you read shows the person's own address, add it:
    `{"callId", "salesId", "email", "emailCallId"}`, with `emailCallId` the Apollo or read call.
    The server checks that address first and asks its sources only if it fails, so Apollo is not
@@ -92,7 +95,7 @@ Read `bh2 brief` first (the getting-started skill). Everything below acts on the
 | `awaitingApproval`                                 | `bh2 search show` | You asked for more than a person approved                                                                                                                                     | Remind the person with the link; buy nothing meanwhile.                                                       |
 | `counts`                                           | `bh2 search show` | Verdicts so far, companies and people the search added, and `emails`: still being found or checked (`inProgress`), then `valid`, `catchAll`, `unknown`, `invalid`, `notFound` | The numbers for the hand-over. Only `valid` (and, if the person accepts it, `catchAll`) can be written to.    |
 | `reservedUsd`                                      | `bh2 search show` | The part of `spentUsd` held for work still running: calls, and email searches not yet settled                                                                                 | It comes back as emails settle; wait for it before asking for more budget.                                    |
-| `refused`                                          | a save            | Inputs left out, by their place in your list, with a code                                                                                                                     | `employer_not_in_project`: save the company first; `do_not_contact`: leave it; `row_not_found`: check the id; `row_not_savable`: the row names no employer, so find the person inside their company (company-leads, a persona for their title) and save that row; `email_not_in_answer`, `email_other_person`, `shared_inbox`: save them without `email`, or with the call that shows their own address. |
+| `refused`                                          | a save            | Inputs left out, by their place in your list, with a code                                                                                                                     | `employer_not_fit`: judge their company first, or leave them out; `employer_archived`: their company is archived in the project, so leave them out; `do_not_contact`: leave it; `row_not_found`: check the id; `row_not_savable`: the row names no employer, so find the person inside their company (company-leads, a persona for their title) and save that row; `email_not_in_answer`, `email_other_person`, `shared_inbox`: save them without `email`, or with the call that shows their own address. |
 
 ## Decision rules
 
@@ -122,7 +125,7 @@ Read `bh2 brief` first (the getting-started skill). Everything below acts on the
 - Reading `limit_by` on company-leads as a total: it is per company.
 - Judging from the name alone. A "dental" in the name is not evidence; the description, the
   industry or the website is.
-- Saving people before their company, or under a company you judged `not_fit`.
+- Saving people before their company's verdict, or under a company you judged `not_fit`.
 - Asking the person to approve in chat. Only the button on the search's page approves.
 - Putting the plan for the person in Generect's terms. Write "about 300 dental clinics in Texas,
   10–50 people, $1.35 at most", not filter names.

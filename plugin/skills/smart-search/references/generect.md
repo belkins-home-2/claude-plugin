@@ -74,7 +74,7 @@ A refusal (`vendor_refused`) carries Generect's own words and costs nothing: fix
 - `offset_by + limit_by` stays within 2,400. The count ignores what the server leaves out.
 - A row has `sales_id` (save it with `{"callId", "salesId"}`), `full_name`, `job_title`, `location`,
   and its employer as `lead_company_id` / `lead_company_name`. The employer must be in the project
-  before the person can be saved.
+  or judged fit before the person can be saved.
 
 ## People inside listed companies
 
@@ -139,7 +139,7 @@ companies. Measured 2026-10-07:
   for an older one that matters, check the person on LinkedIn now (company-leads) before saving.
 - A row has `sales_id` (save it with `{"callId", "salesId"}`), `full_name`, `job_title`,
   `company_name`, `company_location`, `updated_at`, and its employer as `linkedin_company_id` (a
-  number). The employer must be in the project before the person can be saved.
+  number). The employer must be in the project or judged fit before the person can be saved.
 
 ## One record
 
