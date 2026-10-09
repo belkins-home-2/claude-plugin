@@ -52,6 +52,14 @@ only way in.
 | `earlierSearches`       | The team's last ten searches, with the filters they ran with and what they found                               | Reuse what worked; do not run the same search again.                                                                           |
 | `handovers`             | What the last sessions left, newest first: done, left, to watch                                                | Pick up "Left" first and check every "Watch" item.                                                                             |
 
+### The client's website
+
+Read it before you suggest who to look for: the home page and the pages that say what the client
+sells and to whom. It is public, so read it with your web tools; it is the one read that does not
+go through `bh2`. When `project.website` is empty, ask the person for the address before you plan
+any search, and suggest they add it to the project in Belkins Home. Never send anything from
+Belkins Home to a website.
+
 ## End of a session
 
 `bh2 handover --summary "<text>"`: mandatory, even after a short session. Three parts in plain

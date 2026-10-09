@@ -21,7 +21,8 @@ Read `bh2 brief` first (the getting-started skill). Everything below acts on the
 - **The person decides** the titles, the regions and anything that changes the budget. Take what
   the brief already says first: `audiences` are the project's title lists, `insights.pages` the
   client's own words (read them before judging anyone), `earlierSearches` and `makeUp` what the
-  team already has, not to be repeated. Then ask the rest in one message.
+  team already has, not to be repeated. Read the client's website too, with your web tools
+  (getting-started); when the brief has none, ask for it. Then ask the rest in one message.
 - **What you find is kept through bh2**: verdicts, people, the plan, the hand-over. Files under
   `clients/<project>/` are your working copies; the next session sees only what bh2 saved.
 
