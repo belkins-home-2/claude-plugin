@@ -41,4 +41,11 @@ if [ "$major" -lt 22 ] || { [ "$major" -eq 22 ] && [ "$minor" -lt 18 ]; }; then
   exit 2
 fi
 
+# Git Bash, the shell Claude Code uses on Windows, turns an argument that starts with / into a
+# Windows folder when it starts node: the call path /search/realtime/leads/ would arrive as
+# C:/Program Files/Git/search/realtime/leads/. The API's paths (bh2 calls) are left as they are;
+# file paths are still turned into Windows ones, as Node needs. Other systems ignore the variable.
+MSYS2_ARG_CONV_EXCL="/search/;/enrich/;/people/${MSYS2_ARG_CONV_EXCL:+;$MSYS2_ARG_CONV_EXCL}"
+export MSYS2_ARG_CONV_EXCL
+
 exec node --disable-warning=ExperimentalWarning "$cli" "$@"
