@@ -32,7 +32,15 @@ export interface SearchOptions {
 	verdict?: string
 	people?: string
 	limit?: string
+	timeout?: string
 }
+
+/** `bh2 search wait`: minutes it waits for an approval unless told otherwise, and at most. */
+const WAIT_MINUTES = 15
+const WAIT_MAX_MINUTES = 60
+
+/** How often `bh2 search wait` asks; the tests set BH2_WAIT_POLL_MS. */
+const WAIT_POLL_MS = 5_000
 
 /**
  * An answer this long is printed; a longer one is written to a file and its path printed, so a
@@ -92,13 +100,77 @@ export async function searchCommand(
 				...(o.name ? { name: o.name } : {}),
 			})
 		}
+		case 'wait': {
+			const minutes = o.timeout ? whole(o.timeout, '--timeout') : WAIT_MINUTES
+			if (minutes > WAIT_MAX_MINUTES) {
+				throw usage(
+					`--timeout is at most ${WAIT_MAX_MINUTES} minutes`,
+					`bh2 search wait <search> --timeout ${WAIT_MAX_MINUTES}`,
+				)
+			}
+			return waitForApproval(config, needSlug(), {
+				timeoutMs: minutes * 60_000,
+				pollMs: Number(process.env.BH2_WAIT_POLL_MS) || WAIT_POLL_MS,
+			})
+		}
 		case 'done':
 			return call(config, 'PATCH', needSlug(), { done: true })
 		default:
 			throw usage(
 				`Unknown: bh2 search ${action ?? ''}`.trim(),
-				'bh2 --help lists the search commands: new, show, plan, done',
+				'bh2 --help lists the search commands: new, show, plan, wait, done',
 			)
+	}
+}
+
+/**
+ * `bh2 search wait`: asks for the search every few seconds and answers it the moment a person has
+ * approved the budget Claude asked for, so Claude goes on without the person having to say so. It
+ * runs in the background; a lost connection is asked again until the time is up.
+ */
+export async function waitForApproval(
+	config: Bh2Config,
+	path: string,
+	timing: { timeoutMs: number; pollMs: number },
+): Promise<unknown> {
+	const deadline = Date.now() + timing.timeoutMs
+	let link: string | undefined
+
+	for (;;) {
+		try {
+			const search = (await call(config, 'GET', path)) as {
+				status: string
+				budgetApproved: number | null
+				awaitingApproval: boolean
+				link?: string
+			}
+			link = search.link ?? link
+			if (search.status === 'done') {
+				throw new Bh2Error('The search is closed', {
+					code: 'search_done',
+					message: 'The search was closed while waiting for its budget',
+					hint: 'Start a new one with bh2 search new',
+				})
+			}
+			if (search.budgetApproved !== null && !search.awaitingApproval) {
+				return search
+			}
+		} catch (error) {
+			// A lost connection is not an answer: ask again until the time is up.
+			if (!(error instanceof Bh2Error && error.payload.code === 'api_unreachable')) {
+				throw error
+			}
+		}
+
+		if (Date.now() + timing.pollMs > deadline) {
+			const minutes = Math.max(1, Math.round(timing.timeoutMs / 60_000))
+			throw new Bh2Error('Not approved yet', {
+				code: 'not_approved_yet',
+				message: `Nobody approved the budget within ${minutes} minutes`,
+				hint: `Remind the person once${link ? ` with the link, ${link}` : ''}; when they are back, run bh2 search wait again`,
+			})
+		}
+		await new Promise(resolve => setTimeout(resolve, timing.pollMs))
 	}
 }
 

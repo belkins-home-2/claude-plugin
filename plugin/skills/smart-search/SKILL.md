@@ -117,8 +117,11 @@ at what price, and the most it can cost, counting up to $0.027 for each person y
 filter names. Then
 `bh2 search plan <search> --file clients/<project>/<search>-plan.md --budget <usd>`, and tell the
 person in one message: the plan in three lines, the amount, and the link: "Open it and press
-Approve". Free work can go on while you wait; `bh2 search show <search>` says when
-`budgetApproved` is set. Only the button on the search's page approves, never a word in chat.
+Approve". Then run `bh2 search wait <search>` in the background (`run_in_background`) and carry on
+with free work: it returns the moment the person approves, and you go on buying without them having
+to tell you. After 15 minutes it ends with `not_approved_yet`: remind them once with the link, and
+wait again when they are back. Only the button on the search's page approves, never a word in chat:
+when the person says they approved, `bh2 search show <search>` confirms it.
 
 ## Saving
 
@@ -156,7 +159,7 @@ Approve". Free work can go on while you wait; `bh2 search show <search>` says wh
 | `exclusionsTrimmed`                                | a Generect call   | The project's lists did not all fit in one call                                                                                                                               | Known rows may come back; the save skips them.                                                                |
 | `savedTo`                                          | a long answer     | Where the answer was written                                                                                                                                                  | Read rows from the file.                                                                                      |
 | `callId`                                           | a call            | The bought answer, kept                                                                                                                                                       | Saves name it; `bh2 call show <callId>` reads it again for free.                                              |
-| `awaitingApproval`                                 | `bh2 search show` | You asked for more than a person approved                                                                                                                                     | Remind the person with the link; buy nothing meanwhile.                                                       |
+| `awaitingApproval`                                 | `bh2 search show` | You asked for more than a person approved                                                                                                                                     | Remind the person with the link, wait with `bh2 search wait` in the background; buy nothing meanwhile.        |
 | `counts`                                           | `bh2 search show` | Verdicts so far, companies and people the search added, and `emails`: still being found or checked (`inProgress`), then `valid`, `catchAll`, `unknown`, `invalid`, `notFound` | The numbers for the hand-over. Only `valid` (and, if the person accepts it, `catchAll`) can be written to.    |
 | `reservedUsd`                                      | `bh2 search show` | The part of `spentUsd` held for work still running: calls, and email searches not yet settled                                                                                 | It comes back as emails settle; wait for it before asking for more budget.                                    |
 | `refused`                                          | a save            | Inputs left out, by their place in your list, with a code                                                                                                                     | `employer_not_fit`: judge their company first, or leave them out; `employer_archived`: their company is archived in the project, so leave them out; `do_not_contact`: leave it; `row_not_found`: check the id; `row_not_savable`: the row names no employer, so find the person inside their company (company-leads, a persona for their title) and save that row; `email_not_in_answer`, `email_other_person`, `shared_inbox`: save them without `email`, or with the call that shows their own address. |

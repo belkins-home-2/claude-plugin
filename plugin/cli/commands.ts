@@ -62,6 +62,10 @@ a budget a person approves on the search's page in Belkins Home; you cannot appr
   search plan <search> [--plan <text> | --file <path|->] [--budget <usd>] [--name <text>]
                                         the plan the person reads and the budget you ask for; then
                                         ask the person to press Approve on the search's page
+  search wait <search> [--timeout <minutes>]
+                                        wait until a person approves the budget you asked for: run it
+                                        in the background and carry on with free work. 15 minutes
+                                        unless --timeout (at most 60), then not_approved_yet
   search done <search>                 close it: nothing more is bought for it
   calls                                every call a search can make, with its price
   call <search> <provider> <path> (--body <json> | --file <path|->) [--again] [--out <file>]
@@ -171,6 +175,7 @@ export async function main(argv: string[]): Promise<void> {
 				'per-page': { type: 'string' },
 				verdict: { type: 'string' },
 				people: { type: 'string' },
+				timeout: { type: 'string' },
 			},
 		})
 	} catch (error) {
