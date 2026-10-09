@@ -18,11 +18,11 @@ Read `bh2 brief` first (the getting-started skill). Everything below acts on the
   and you stop buying when it runs out. The server refuses a paid call the budget cannot hold.
 - **Free before paid.** Our own database and Generect's database counts cost nothing. Never buy a
   page a count says is empty.
-- **The person decides** the titles, the regions and anything that changes the budget. Take what
-  the brief already says first: `audiences` are the project's title lists, `insights.pages` the
-  client's own words (read them before judging anyone), `earlierSearches` and `makeUp` what the
-  team already has, not to be repeated. Read the client's website too, with your web tools
-  (getting-started); when the brief has none, ask for it. Then ask the rest in one message.
+- **You choose who to look for**, from what the project already says: `audiences` are its title
+  lists, `insights.pages` and the client's website the client's own words (read them before
+  judging anyone; getting-started), `makeUp` and `earlierSearches` what the team already has, not
+  to be repeated, and `bh2 project companies --with-meetings` and `bh2 project contacts --replied`
+  what worked. Ask the person only what these leave open, in one message, with your best guess.
 - **What you find is kept through bh2**: verdicts, people, the plan, the hand-over. Files under
   `clients/<project>/` are your working copies; the next session sees only what bh2 saved.
 
@@ -32,6 +32,8 @@ Read `bh2 brief` first (the getting-started skill). Everything below acts on the
   and `link`, the search's page), with a plan in plain words and a budget the person approved.
 - A verdict on every company you looked at: `fit`, `not_fit` or `unsure`, with a reason a person
   can check (references/judging.md). It is what the person reads, and what keeps the next page new.
+- When the person asks for the best N, more than N judged, and the N that fit best named in your
+  answer and the hand-over, each with its reason.
 - The people the person asked for, saved under fit companies. Their emails are found and checked on
   the server.
 - A hand-over (getting-started): the search's slug and link, spent against approved, companies by
@@ -53,9 +55,6 @@ Choose by what the ask turns on, and switch or mix when the counts say so.
   (`/enrich/database/company/` with its `id`, $0.0045) and judge it from that call.
 - **From a list on a web page**, when the ask names one (exhibitors, members, a team page):
   references/web-pages.md.
-- **More like what worked**, when the project already has meetings or answers:
-  `bh2 project companies --with-meetings` and `bh2 project contacts --replied` show which
-  companies and people; their industries, sizes and titles are filters to start from.
 - **Picking a search up**, yours or a teammate's: `bh2 search show <search>` for the money and the
   counts; `bh2 companies list <search> --verdict fit` for each fit company's `peopleStatus`:
   `saved`, `searched` (a company-leads call listed it and nobody was saved; `peopleFound` is how
@@ -110,10 +109,11 @@ Defaults, not rules: change them when the ask needs it, and say why in the hand-
 
 ## The plan and the budget
 
-Write the plan for the person, in plain words (references are not for them): what you will look at,
-what you will buy, how many rows, at what price, and the most it can cost, counting up to $0.027 for
-each person you plan to save (their email search). Write "about 300 dental clinics in Texas, 10–50
-people, $1.35 at most", not filter names. Then
+Write the plan for the person, in plain words (references are not for them): who you chose to look
+for and what in the project led you there, what you will look at, what you will buy, how many rows,
+at what price, and the most it can cost, counting up to $0.027 for each person you plan to save
+(their email search). Write "about 300 dental clinics in Texas, 10–50 people, $1.35 at most", not
+filter names. Then
 `bh2 search plan <search> --file clients/<project>/<search>-plan.md --budget <usd>`, and tell the
 person in one message: the plan in three lines, the amount, and the link: "Open it and press
 Approve". Free work can go on while you wait; `bh2 search show <search>` says when

@@ -56,9 +56,9 @@ only way in.
 
 Read it before you suggest who to look for: the home page and the pages that say what the client
 sells and to whom. It is public, so read it with your web tools; it is the one read that does not
-go through `bh2`. When `project.website` is empty, ask the person for the address before you plan
-any search, and suggest they add it to the project in Belkins Home. Never send anything from
-Belkins Home to a website.
+go through `bh2`. When `project.website` is empty, suggest the person adds it to the project in
+Belkins Home, and ask them for the address only when the rest of the project does not say who the
+client sells to. Never send anything from Belkins Home to a website.
 
 ## End of a session
 
