@@ -17,6 +17,7 @@ import {
 	dbCommand,
 	dncCommand,
 	insightsCommand,
+	listCompanies,
 	listSearches,
 	readCommand,
 	saveCommand,
@@ -80,6 +81,13 @@ a budget a person approves on the search's page in Belkins Home; you cannot appr
             [--page <n>] [--per-page <n>]
                                         people with a valid email our database holds, free:
                                         refreshed within 3 months, not in the project
+  companies list <search> [--verdict fit|not_fit|unsure] [--people saved|searched|not_searched]
+                 [--page <n>] [--per-page <n>]
+                                        the search's verdicts, newest first, with how far each
+                                        company's people got: saved (the project holds someone
+                                        there), searched (listed in a company-leads call, nobody
+                                        saved; peopleFound is how many it returned) or not_searched.
+                                        A free bh2 db people lookup does not count as a search
   companies save <search> --file <path|->
                                         your verdicts, a JSON list of {companyId | callId with
                                         linkedinId or domain | linkedinId | domain, verdict:
@@ -158,6 +166,8 @@ export async function main(argv: string[]): Promise<void> {
 				'revenue-max': { type: 'string' },
 				page: { type: 'string' },
 				'per-page': { type: 'string' },
+				verdict: { type: 'string' },
+				people: { type: 'string' },
 			},
 		})
 	} catch (error) {
@@ -312,6 +322,12 @@ export async function main(argv: string[]): Promise<void> {
 			return out(await dbCommand(config, slug(), rest, o))
 
 		case 'companies':
+			return out(
+				await (rest[0] === 'list'
+					? listCompanies(config, slug(), rest, o)
+					: saveCommand(config, slug(), cmd, rest, o)),
+			)
+
 		case 'people':
 			return out(await saveCommand(config, slug(), cmd, rest, o))
 

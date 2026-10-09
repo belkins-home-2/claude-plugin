@@ -29,6 +29,8 @@ export interface SearchOptions {
 	'revenue-max'?: string
 	page?: string
 	'per-page'?: string
+	verdict?: string
+	people?: string
 }
 
 /**
@@ -215,6 +217,41 @@ export function dbCommand(
 	throw usage(
 		`Unknown: bh2 db ${kind ?? ''}`.trim(),
 		'bh2 db companies or bh2 db people; bh2 --help lists their filters',
+	)
+}
+
+/** `bh2 companies list <search>`: the verdicts, with how far each company's people got. */
+export function listCompanies(
+	config: Bh2Config,
+	project: string,
+	args: string[],
+	o: SearchOptions,
+): Promise<unknown> {
+	const [, slug] = args
+	if (!slug) {
+		throw usage(
+			'bh2 companies list needs the search',
+			'bh2 searches lists the project’s smart searches by slug',
+		)
+	}
+	const query = new URLSearchParams()
+	if (o.verdict) {
+		query.set('verdict', o.verdict)
+	}
+	if (o.people) {
+		query.set('people', o.people)
+	}
+	if (o.page) {
+		query.set('page', String(whole(o.page, '--page') - 1))
+	}
+	if (o['per-page']) {
+		query.set('perPage', String(whole(o['per-page'], '--per-page')))
+	}
+	const suffix = query.size ? `?${query}` : ''
+	return call(
+		config,
+		'GET',
+		`/cli/projects/${enc(project)}/searches/${enc(slug)}/companies${suffix}`,
 	)
 }
 

@@ -62,6 +62,11 @@ Read `bh2 brief` first (the getting-started skill). Everything below acts on the
     - or, for people across many companies at once ("owners of dental clinics in Texas"),
       Generect's database of people: $0.0045 a person, the cheapest, but check each row's
       `updated_at` (references/generect.md).
+
+   To pick the search up, now or in a later session: `bh2 companies list <search> --verdict fit`
+   gives each fit company's `peopleStatus`: `saved`, `searched` (a company-leads call listed it and
+   nobody was saved; `peopleFound` says how many people it returned) or `not_searched`. A free
+   `bh2 db people` lookup does not count as a search.
 8. **Save the people**: `bh2 people save <search> --file clients/<project>/<search>-people.json`,
    a list of `{"contactId"}` (from `bh2 db people`) or `{"callId", "salesId"}` (from a bought
    answer). A person goes in only under a company the project holds or one you judged fit: save
