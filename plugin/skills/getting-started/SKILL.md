@@ -47,10 +47,18 @@ only way in.
 | `doNotContact.outreach` | How many companies and people the project must never be written to                                             | Nobody on it is ever added or contacted.                                                                                       |
 | `doNotContact.client`   | The client's own list of companies and people to leave alone                                                   | Same: nobody on it is added.                                                                                                   |
 | `inProject`             | Companies and contacts already in the project, and the contacts by the status of their email                   | Do not find again what is there. `valid` and `catchAll` emails can be written to; `checking` are still being verified.         |
-| `makeUp`                | What the project holds by industry, country and size, and its contacts by title                                | A new search adds to it, never repeats it. `bh2 project companies` and `bh2 project contacts` show the rows behind it.         |
-| `insights`              | The client's products, and its Insights pages (ideal client, value proposition, case studies, call notes)      | `bh2 insights read <id>` the pages that say who the client sells to before looking for anyone.                                 |
+| `makeUp`                | What the project holds by industry, country and size, and its contacts by title                                | A new search adds to it, never repeats it. `bh2 sql` reads the rows behind it (references/sql.md).                             |
+| `insights`              | The client's products, and its Insights pages (ideal client, value proposition, case studies, call notes)      | Read the pages that say who the client sells to, whole, before looking for anyone (`bh2 sql`, references/sql.md).              |
 | `earlierSearches`       | The team's last ten searches, with the filters they ran with and what they found                               | Reuse what worked; do not run the same search again.                                                                           |
 | `handovers`             | What the last sessions left, newest first: done, left, to watch                                                | Pick up "Left" first and check every "Watch" item.                                                                             |
+
+### Reading anything else: `bh2 sql`
+
+Everything Belkins Home holds that the brief does not show is one read-only query away: the rows
+behind `makeUp`, the companies that booked meetings and the people who wrote back, an Insights page
+whole, older hand-overs, the project's smart searches. `bh2 sql "<select …>"`, with `@project` for
+this project. Passwords, keys, tokens and sessions are never readable. The tables, the counting rules
+the app uses and ready queries are in references/sql.md; read it before your first query.
 
 ### The client's website
 
@@ -81,11 +89,11 @@ do, and write it in the hand-over's Watch part.
 
 ## What this version of bh2 does
 
-It connects, finds and opens projects, reads the brief, lists the companies and people a project
-holds, keeps hand-overs, and runs smart searches: finding companies and the people in them, from
-our own database and from Generect, and finding and checking those people's emails, inside a
-budget a person approves (the smart-search skill). Campaigns are not run from here: say so when
-asked rather than working around it.
+It connects, finds and opens projects, reads the brief and anything else in Belkins Home
+(`bh2 sql`, read only), keeps hand-overs, and runs smart searches: finding companies and the people
+in them, from our own database and from Generect, and finding and checking those people's emails,
+inside a budget a person approves (the smart-search skill). Campaigns are not run from here: say
+so when asked rather than working around it.
 
 ## Common mistakes
 

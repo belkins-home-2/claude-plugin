@@ -21,8 +21,9 @@ Read `bh2 brief` first (the getting-started skill). Everything below acts on the
 - **You choose who to look for**, from what the project already says: `audiences` are its title
   lists, `insights.pages` and the client's website the client's own words (read them before
   judging anyone; getting-started), `makeUp` and `earlierSearches` what the team already has, not
-  to be repeated, and `bh2 project companies --with-meetings` and `bh2 project contacts --replied`
-  what worked. Ask the person only what these leave open, in one message, with your best guess.
+  to be repeated, and the companies that booked meetings and the segments that did best what
+  worked (`bh2 sql`, getting-started references/sql.md). Ask the person only what these leave open,
+  in one message, with your best guess.
 - **What you find is kept through bh2**: verdicts, people, the plan, the hand-over. Files under
   `clients/<project>/` are your working copies; the next session sees only what bh2 saved.
 

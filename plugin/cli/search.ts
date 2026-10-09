@@ -31,10 +31,7 @@ export interface SearchOptions {
 	'per-page'?: string
 	verdict?: string
 	people?: string
-	country?: string[]
-	'with-meetings'?: boolean
-	replied?: boolean
-	sample?: boolean
+	limit?: string
 }
 
 /**
@@ -62,7 +59,7 @@ export async function searchCommand(
 		if (!slug) {
 			throw usage(
 				`bh2 search ${action} needs the search`,
-				'bh2 searches lists the project’s smart searches by slug',
+				'bh2 sql "select slug, name, status from smart_search_requests where project_id = @project" lists them',
 			)
 		}
 		return `${base}/${enc(slug)}`
@@ -103,22 +100,6 @@ export async function searchCommand(
 				'bh2 --help lists the search commands: new, show, plan, done',
 			)
 	}
-}
-
-export function listSearches(
-	config: Bh2Config,
-	project: string,
-	o: SearchOptions,
-): Promise<unknown> {
-	const query = new URLSearchParams()
-	if (o.page) {
-		query.set('page', String(whole(o.page, '--page') - 1))
-	}
-	if (o['per-page']) {
-		query.set('perPage', String(whole(o['per-page'], '--per-page')))
-	}
-	const suffix = query.size ? `?${query}` : ''
-	return call(config, 'GET', `/cli/projects/${enc(project)}/searches${suffix}`)
 }
 
 /** `bh2 call <search> <provider> <path>` and `bh2 call show <id>`. */
@@ -224,55 +205,6 @@ export function dbCommand(
 	)
 }
 
-/** `bh2 project companies` and `bh2 project contacts`: what the project already holds. */
-export function projectRecords(
-	config: Bh2Config,
-	project: string,
-	kind: string,
-	o: SearchOptions,
-): Promise<unknown> {
-	if (kind !== 'companies' && kind !== 'contacts') {
-		throw usage(
-			`Unknown: bh2 project ${kind}`,
-			'bh2 project, bh2 project companies or bh2 project contacts; bh2 --help lists their filters',
-		)
-	}
-	if (kind === 'companies' && (o.title || o.audience)) {
-		throw usage(
-			'--title and --audience narrow people, not companies',
-			'bh2 project contacts --title <words> lists the people; their companies are on each row',
-		)
-	}
-	const query = new URLSearchParams()
-	const each = (key: string, values: string[] | undefined): void => {
-		for (const value of values ?? []) {
-			query.append(key, value)
-		}
-	}
-	each('industry', o.industry)
-	each('size', o.size)
-	each('country', o.country)
-	each('title', o.title)
-	each('audience', o.audience)
-	if (o['with-meetings']) {
-		query.set('withMeetings', 'true')
-	}
-	if (o.replied) {
-		query.set('replied', 'true')
-	}
-	if (o.sample) {
-		query.set('sample', 'true')
-	}
-	if (o.page) {
-		query.set('page', String(whole(o.page, '--page') - 1))
-	}
-	if (o['per-page']) {
-		query.set('perPage', String(whole(o['per-page'], '--per-page')))
-	}
-	const suffix = query.size ? `?${query}` : ''
-	return call(config, 'GET', `/cli/projects/${enc(project)}/${kind}${suffix}`)
-}
-
 /** `bh2 companies list <search>`: the verdicts, with how far each company's people got. */
 export function listCompanies(
 	config: Bh2Config,
@@ -359,19 +291,35 @@ export async function dncCommand(
 }
 
 /** `bh2 insights read <id>`. */
-export function insightsCommand(
+/** `bh2 sql`: one read-only SELECT; an answer too long to print is kept in the work folder. */
+export async function sqlCommand(
 	config: Bh2Config,
 	project: string,
 	args: string[],
+	o: SearchOptions,
 ): Promise<unknown> {
-	const [action, id] = args
-	if (action !== 'read' || !id) {
+	const query = o.file ? await readText(o.file) : args.join(' ')
+	if (!query.trim()) {
 		throw usage(
-			'bh2 insights read needs the page id',
-			'bh2 brief lists the pages under insights.pages',
+			'bh2 sql needs a query',
+			'bh2 sql "select … from projects where id = @project", or --file <path|-> for a long one',
 		)
 	}
-	return call(config, 'GET', `/cli/projects/${enc(project)}/insights/${enc(id)}`)
+	const answer = (await call(config, 'POST', `/cli/projects/${enc(project)}/sql`, {
+		query,
+		...(o.limit ? { limit: whole(o.limit, '--limit') } : {}),
+	})) as { columns: string[]; rows: unknown[][]; rowCount: number; truncated: boolean }
+	const text = JSON.stringify(answer, null, 2)
+	if (text.length <= INLINE_MAX_CHARS) {
+		return answer
+	}
+	const file = resolve(
+		join('clients', project, 'sql', `${new Date().toISOString().replace(/[:.]/g, '-')}.json`),
+	)
+	await mkdir(dirname(file), { recursive: true })
+	await writeFile(file, `${text}\n`)
+	const { rows: _rows, ...rest } = answer
+	return { ...rest, savedTo: file, chars: text.length }
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────

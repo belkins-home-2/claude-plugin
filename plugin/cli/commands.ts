@@ -16,13 +16,11 @@ import {
 	callCommand,
 	dbCommand,
 	dncCommand,
-	insightsCommand,
 	listCompanies,
-	listSearches,
-	projectRecords,
 	readCommand,
 	saveCommand,
 	searchCommand,
+	sqlCommand,
 } from './search.ts'
 import { setup } from './setup.ts'
 
@@ -45,33 +43,21 @@ with exit 1 (2 for a misused command); the hint says what to do next.
                                         which one and why. Each session keeps its own and none is ever
                                         defaulted. Outside Claude Code: --project or BH2_PROJECT
   project                              the current project
-  project companies [--industry <name>]... [--size <band>]... [--country <name>]...
-                    [--with-meetings] [--replied] [--sample] [--page <n>] [--per-page <n>]
-                                        the companies the project holds, newest first, each with its
-                                        contacts and meetings counted. --with-meetings: booked at
-                                        least one meeting; --replied: someone there wrote back to a
-                                        campaign (auto-replies do not count); --sample: a random
-                                        draw instead of a page (25; at most 100). Values as the
-                                        brief's makeUp names them
-  project contacts [--title <words>]... [--audience <id>]... [--industry <name>]... [--size <band>]...
-                   [--country <name>]... [--with-meetings] [--replied] [--sample] [--page <n>] [--per-page <n>]
-                                        the people the project holds: name, title, company, how far
-                                        their email got (never the address), meetings, and how the
-                                        Inbox classified their latest answer to a campaign.
-                                        --industry, --size and --country are their company's
   brief                                read it first, every session: the project, its title lists,
                                         its do-not-contact lists, what it holds, the last hand-overs
   handover --summary <text> | --file <path|->
                                        what this session leaves for the next: done, left, to watch
-  handovers [--limit <n>]              the project's hand-overs, newest first (10; at most 50)
-  insights read <id>                   one Insights page the brief lists, whole
+  sql "<select …>" | --file <path|->  [--limit <n>]
+                                        read anything else, read only: one SELECT over every table but
+                                        the secrets (passwords, keys, tokens, credentials, sessions).
+                                        @project stands for the current project's id; 200 rows unless
+                                        --limit (at most 1000). A long answer goes to a file
+                                        (clients/<project>/sql/) and its path is printed
 
 Smart search: you find the companies and people the person asked for. Paid calls run only inside
 a budget a person approves on the search's page in Belkins Home; you cannot approve it.
   search new --name <text> [--ask <text>]
                                         start one; prints its page link
-  searches [--page <n>] [--per-page <n>]
-                                        the project's smart searches
   search show <search>                 its plan, budget, spend, verdict counts and page link
   search plan <search> [--plan <text> | --file <path|->] [--budget <usd>] [--name <text>]
                                         the plan the person reads and the budget you ask for; then
@@ -185,10 +171,6 @@ export async function main(argv: string[]): Promise<void> {
 				'per-page': { type: 'string' },
 				verdict: { type: 'string' },
 				people: { type: 'string' },
-				country: { type: 'string', multiple: true },
-				'with-meetings': { type: 'boolean' },
-				replied: { type: 'boolean' },
-				sample: { type: 'boolean' },
 			},
 		})
 	} catch (error) {
@@ -296,11 +278,7 @@ export async function main(argv: string[]): Promise<void> {
 		}
 
 		case 'project':
-			return out(
-				await (sub
-					? projectRecords(config, slug(), sub, o)
-					: call(config, 'GET', `/cli/projects/${p()}`)),
-			)
+			return out(await call(config, 'GET', `/cli/projects/${p()}`))
 
 		case 'brief':
 			return out(await call(config, 'GET', `/cli/projects/${p()}/brief`))
@@ -316,23 +294,11 @@ export async function main(argv: string[]): Promise<void> {
 			return out(await call(config, 'POST', `/cli/projects/${p()}/handovers`, { summary }))
 		}
 
-		case 'handovers':
-			return out(
-				await call(
-					config,
-					'GET',
-					`/cli/projects/${p()}/handovers${o.limit ? `?limit=${encodeURIComponent(o.limit)}` : ''}`,
-				),
-			)
-
-		case 'insights':
-			return out(await insightsCommand(config, slug(), rest))
+		case 'sql':
+			return out(await sqlCommand(config, slug(), rest, o))
 
 		case 'search':
 			return out(await searchCommand(config, slug(), rest, o))
-
-		case 'searches':
-			return out(await listSearches(config, slug(), o))
 
 		case 'calls':
 			return out(await call(config, 'GET', '/cli/calls'))
