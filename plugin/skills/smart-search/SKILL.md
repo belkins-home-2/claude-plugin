@@ -53,6 +53,9 @@ Choose by what the ask turns on, and switch or mix when the counts say so.
   (`/enrich/database/company/` with its `id`, $0.0045) and judge it from that call.
 - **From a list on a web page**, when the ask names one (exhibitors, members, a team page):
   references/web-pages.md.
+- **More like what worked**, when the project already has meetings or answers:
+  `bh2 project companies --with-meetings` and `bh2 project contacts --replied` show which
+  companies and people; their industries, sizes and titles are filters to start from.
 - **Picking a search up**, yours or a teammate's: `bh2 search show <search>` for the money and the
   counts; `bh2 companies list <search> --verdict fit` for each fit company's `peopleStatus`:
   `saved`, `searched` (a company-leads call listed it and nobody was saved; `peopleFound` is how

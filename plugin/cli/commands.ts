@@ -19,6 +19,7 @@ import {
 	insightsCommand,
 	listCompanies,
 	listSearches,
+	projectRecords,
 	readCommand,
 	saveCommand,
 	searchCommand,
@@ -44,6 +45,20 @@ with exit 1 (2 for a misused command); the hint says what to do next.
                                         which one and why. Each session keeps its own and none is ever
                                         defaulted. Outside Claude Code: --project or BH2_PROJECT
   project                              the current project
+  project companies [--industry <name>]... [--size <band>]... [--country <name>]...
+                    [--with-meetings] [--replied] [--sample] [--page <n>] [--per-page <n>]
+                                        the companies the project holds, newest first, each with its
+                                        contacts and meetings counted. --with-meetings: booked at
+                                        least one meeting; --replied: someone there wrote back to a
+                                        campaign (auto-replies do not count); --sample: a random
+                                        draw instead of a page (25; at most 100). Values as the
+                                        brief's makeUp names them
+  project contacts [--title <words>]... [--audience <id>]... [--industry <name>]... [--size <band>]...
+                   [--country <name>]... [--with-meetings] [--replied] [--sample] [--page <n>] [--per-page <n>]
+                                        the people the project holds: name, title, company, how far
+                                        their email got (never the address), meetings, and how the
+                                        Inbox classified their latest answer to a campaign.
+                                        --industry, --size and --country are their company's
   brief                                read it first, every session: the project, its title lists,
                                         its do-not-contact lists, what it holds, the last hand-overs
   handover --summary <text> | --file <path|->
@@ -170,6 +185,10 @@ export async function main(argv: string[]): Promise<void> {
 				'per-page': { type: 'string' },
 				verdict: { type: 'string' },
 				people: { type: 'string' },
+				country: { type: 'string', multiple: true },
+				'with-meetings': { type: 'boolean' },
+				replied: { type: 'boolean' },
+				sample: { type: 'boolean' },
 			},
 		})
 	} catch (error) {
@@ -277,7 +296,11 @@ export async function main(argv: string[]): Promise<void> {
 		}
 
 		case 'project':
-			return out(await call(config, 'GET', `/cli/projects/${p()}`))
+			return out(
+				await (sub
+					? projectRecords(config, slug(), sub, o)
+					: call(config, 'GET', `/cli/projects/${p()}`)),
+			)
 
 		case 'brief':
 			return out(await call(config, 'GET', `/cli/projects/${p()}/brief`))

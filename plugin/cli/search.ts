@@ -31,6 +31,10 @@ export interface SearchOptions {
 	'per-page'?: string
 	verdict?: string
 	people?: string
+	country?: string[]
+	'with-meetings'?: boolean
+	replied?: boolean
+	sample?: boolean
 }
 
 /**
@@ -218,6 +222,55 @@ export function dbCommand(
 		`Unknown: bh2 db ${kind ?? ''}`.trim(),
 		'bh2 db companies or bh2 db people; bh2 --help lists their filters',
 	)
+}
+
+/** `bh2 project companies` and `bh2 project contacts`: what the project already holds. */
+export function projectRecords(
+	config: Bh2Config,
+	project: string,
+	kind: string,
+	o: SearchOptions,
+): Promise<unknown> {
+	if (kind !== 'companies' && kind !== 'contacts') {
+		throw usage(
+			`Unknown: bh2 project ${kind}`,
+			'bh2 project, bh2 project companies or bh2 project contacts; bh2 --help lists their filters',
+		)
+	}
+	if (kind === 'companies' && (o.title || o.audience)) {
+		throw usage(
+			'--title and --audience narrow people, not companies',
+			'bh2 project contacts --title <words> lists the people; their companies are on each row',
+		)
+	}
+	const query = new URLSearchParams()
+	const each = (key: string, values: string[] | undefined): void => {
+		for (const value of values ?? []) {
+			query.append(key, value)
+		}
+	}
+	each('industry', o.industry)
+	each('size', o.size)
+	each('country', o.country)
+	each('title', o.title)
+	each('audience', o.audience)
+	if (o['with-meetings']) {
+		query.set('withMeetings', 'true')
+	}
+	if (o.replied) {
+		query.set('replied', 'true')
+	}
+	if (o.sample) {
+		query.set('sample', 'true')
+	}
+	if (o.page) {
+		query.set('page', String(whole(o.page, '--page') - 1))
+	}
+	if (o['per-page']) {
+		query.set('perPage', String(whole(o['per-page'], '--per-page')))
+	}
+	const suffix = query.size ? `?${query}` : ''
+	return call(config, 'GET', `/cli/projects/${enc(project)}/${kind}${suffix}`)
 }
 
 /** `bh2 companies list <search>`: the verdicts, with how far each company's people got. */
