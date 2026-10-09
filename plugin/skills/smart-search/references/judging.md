@@ -6,22 +6,25 @@ a reason someone can verify in a minute, and evidence for every fit.
 
 ## The test
 
-Write the test before the first verdict, from the ask and the brief (ideal client profile pages,
-audiences, earlier searches): the must-haves (industry, size, place, what the company does) and
-the exclusions (what the person or the client ruled out). Every company gets the same test.
+Settle what makes a company fit before judging, from the ask and the brief (ideal client profile
+pages, audiences, earlier searches): the must-haves (industry, size, place, what the company does)
+and the exclusions (what the person or the client ruled out). Hold every company of the search to
+the same test, so its verdicts agree with each other.
 
 - `fit`: meets every must-have, hits no exclusion, and each must-have has evidence.
 - `not_fit`: fails a must-have or hits an exclusion. The reason names which.
 - `unsure`: a must-have cannot be checked from what you have. The reason says what is missing.
 
-## Where the evidence comes from, in order
+## Where evidence comes from
 
-1. **The row itself**: industry, size, place, description, specialities, the website's domain.
-   Most companies are settled here.
-2. **The project's Insights**: what the client sells and to whom; a case study names who bought.
-3. **The company's website**, when the row cannot settle it and the company is worth it:
-   `bh2 read <search> https://<domain>`. Each page costs money; read the home or about page, not
-   the whole site.
+Use whatever settles the company most cheaply:
+
+- **The row itself**: industry, size, place, description, specialities, the website's domain. It
+  settles most companies, for free.
+- **The project's Insights**: what the client sells and to whom; a case study names who bought.
+- **The company's website**, when nothing else settles it and the company is worth it:
+  `bh2 read <search> https://<domain>`. Each page costs money; the home or about page usually
+  says enough.
 
 The name alone is never evidence: "Smile Dental Group" can be a 500-dentist chain or a lab.
 

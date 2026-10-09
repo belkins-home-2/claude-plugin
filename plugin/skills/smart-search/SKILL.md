@@ -5,86 +5,137 @@ description: Finds the companies and people a person asks for on a Belkins Home 
 
 # Smart search
 
-You find what the person asked for: companies that fit, and the right people in them. Two rules
-matter most. **Free before paid**: our own database and Generect's counts cost nothing, so they
-come first, and nothing is bought that a count says is not there. **The person holds the money**:
-every paid call runs inside a budget a person approves on the search's page in Belkins Home. You
-write the plan and ask for the budget; you never approve it, and you stop when it runs out.
+You find what the person asked for: the right people at companies that fit. The route is yours to
+choose. This skill gives you what you cannot see from here (what each source holds, what it costs,
+how bh2 answers) and the few things that always hold.
 
 Read `bh2 brief` first (the getting-started skill). Everything below acts on the project in use.
 
-## Steps
+## What always holds
 
-1. **Understand the ask.** Who (titles), at what companies (industry, size, place, anything else
-   that makes one fit), how many, and what to leave out. Fill the gaps from the brief before
-   asking the person:
-    - `audiences`: the project's title lists. Use them unless the person names other titles.
-    - `insights.pages`: the client's own words. `bh2 insights read <id>` an ideal client profile,
-      value proposition or case study page before judging anyone.
-    - `earlierSearches`: filters the team already used; `makeUp`: what the project already holds
-      (its industries, countries, sizes, titles). A new search should not repeat an old one.
-      Ask the person only what the brief does not answer, in one message.
-2. **Start the search.** `bh2 search new --name "<short name>" --ask "<the person's words>"`. Keep
-   the `slug` and the `link` (the search's page in Belkins Home).
-3. **Size it, for free.**
-    - `bh2 db companies --industry … --location … --size …`: companies our database already holds,
-      fresh, not in the project. `total` says how many match.
-    - `bh2 call <search> generect /search/database/companies/count/ --body '{…}'`: how many more
-      Generect holds. It is net of what the project has. See references/generect.md for bodies.
-    - For people at companies you will judge: `bh2 db people --company <id> … --title <words>` finds
-      people with a checked email we already hold.
-    - `bh2 call <search> generect /search/database/leads/count/ --body '{…}'`: how many people
-      Generect's database holds for the titles and places, net of the project's people.
-4. **Plan and ask for the budget.** Write the plan in plain words, for the person (references are
-   not for them): what you will look at first, what you will buy, how many rows, at what price,
-   and the most it can cost, counting up to $0.027 for each person you plan to save (their email
-   search). Then
-   `bh2 search plan <search> --file clients/<project>/<search>-plan.md --budget <usd>`. Tell the
-   person, in one message: the plan in three lines, the amount, and the link: "Open it and press
-   Approve". Free steps (our database, counts) can go on while you wait; `bh2 search show <search>`
-   says when `budgetApproved` is set.
-5. **Find companies.** Our database first (`bh2 db companies`, page by page), then bought pages
-   (`bh2 call <search> generect /search/database/companies/ --body '{…, "limit_by": 100}'`). Ask for
-   the smallest page that lets you judge: 50–200 rows, never thousands. A page longer than bh2
-   prints is saved to `clients/<project>/calls/<callId>.json`; read it from there. For companies
-   listed on a web page, see references/web-pages.md.
-6. **Judge every company you looked at** (references/judging.md): `fit`, `not_fit` or `unsure`,
-   with a one-sentence reason a person can check, and evidence for a fit. Save in batches of up to
-   500: `bh2 companies save <search> --file clients/<project>/<search>-verdicts.json`. Every
-   verdict is kept on the search's page, and a judged company is never bought again. A verdict
-   adds nothing to the project: a fit company joins it with the first person you save there
-   (step 8), so the project holds only companies with a lead.
-7. **Find people** at the fit companies. Our database first: `bh2 db people --company <companyId> …
---title …`. Then Generect:
-    - people inside listed companies, up to 50 companies a call: `/search/realtime/company-leads/`
-      with the companies' LinkedIn links and the titles as personas. `limit_by` there is people
-      **per company**: 50 companies × 3 people is 150 people, $1.05 at most;
-    - or, for people across many companies at once ("owners of dental clinics in Texas"),
-      Generect's database of people: $0.0045 a person, the cheapest, but check each row's
-      `updated_at` (references/generect.md).
+- **The person holds the money.** Every paid call runs inside a budget a person approves on the
+  search's page in Belkins Home. You write the plan and ask for the budget; you never approve it,
+  and you stop buying when it runs out. The server refuses a paid call the budget cannot hold.
+- **Free before paid.** Our own database and Generect's database counts cost nothing. Never buy a
+  page a count says is empty.
+- **The person decides** the titles, the regions and anything that changes the budget. Take what
+  the brief already says first: `audiences` are the project's title lists, `insights.pages` the
+  client's own words (read them before judging anyone), `earlierSearches` and `makeUp` what the
+  team already has, not to be repeated. Then ask the rest in one message.
+- **What you find is kept through bh2**: verdicts, people, the plan, the hand-over. Files under
+  `clients/<project>/` are your working copies; the next session sees only what bh2 saved.
 
-   To pick the search up, now or in a later session: `bh2 companies list <search> --verdict fit`
-   gives each fit company's `peopleStatus`: `saved`, `searched` (a company-leads call listed it and
-   nobody was saved; `peopleFound` says how many people it returned) or `not_searched`. A free
-   `bh2 db people` lookup does not count as a search.
-8. **Save the people**: `bh2 people save <search> --file clients/<project>/<search>-people.json`,
-   a list of `{"contactId"}` (from `bh2 db people`) or `{"callId", "salesId"}` (from a bought
-   answer). A person goes in only under a company the project holds or one you judged fit: save
-   the verdict first, and the company joins the project with them.
-   When an Apollo match or a page you read shows the person's own address, add it:
-   `{"callId", "salesId", "email", "emailCallId"}`, with `emailCallId` the Apollo or read call.
-   The server checks that address first and asks its sources only if it fails, so Apollo is not
-   paid twice. Only an address that answer shows: never a guess, never a shared inbox (`info@`,
-   `office@`).
-   Saving starts each person's email search at once, on the server: patterns, Hunter, Apollo, then
-   the quick check and, when it cannot tell, the deep check (a test email and up to ~10 minutes per
-   address). Each person holds up to $0.027 of the budget until their email settles; most cost under
-   one cent. People the budget left cannot hold are refused (`email_budget`) and not saved: ask for
-   more budget, then save them again from the same answer. Nothing is bought twice.
-9. **Close it.** When the ask is met or the budget is spent: `bh2 search show <search>` for the
-   numbers. Emails settle on their own within minutes to an hour; `counts.emails.inProgress` says
-   how many are still being found or checked, and the search can be closed with them running
-   (`bh2 search done <search>` stops buying, not the email searches). Then the hand-over.
+## What a finished search has
+
+- A search, `bh2 search new --name "<short name>" --ask "<the person's words>"` (keep its `slug`
+  and `link`, the search's page), with a plan in plain words and a budget the person approved.
+- A verdict on every company you looked at: `fit`, `not_fit` or `unsure`, with a reason a person
+  can check (references/judging.md). It is what the person reads, and what keeps the next page new.
+- The people the person asked for, saved under fit companies. Their emails are found and checked on
+  the server.
+- A hand-over (getting-started): the search's slug and link, spent against approved, companies by
+  verdict, people added, what is left and what it would cost.
+
+It is done when the people are there or the budget is spent, not when every source was tried.
+
+## Choosing the route
+
+Choose by what the ask turns on, and switch or mix when the counts say so.
+
+- **Companies first**, when what makes a company fit is the hard part ("practices with three or
+  more dentists that do implants"): find and judge companies, then look for people inside the fit
+  ones.
+- **People first**, when the title and the place carry the ask ("owners of dental clinics in
+  Texas"): search people, then judge each person's company before saving them. Fewer companies get
+  judged that never get a lead. A company our database holds is judged by its LinkedIn id
+  (`{"linkedinId"}`); for one it does not (`company_not_found`), buy its row first
+  (`/enrich/database/company/` with its `id`, $0.0045) and judge it from that call.
+- **From a list on a web page**, when the ask names one (exhibitors, members, a team page):
+  references/web-pages.md.
+- **Picking a search up**, yours or a teammate's: `bh2 search show <search>` for the money and the
+  counts; `bh2 companies list <search> --verdict fit` for each fit company's `peopleStatus`:
+  `saved`, `searched` (a company-leads call listed it and nobody was saved; `peopleFound` is how
+  many people it returned) or `not_searched`. A free `bh2 db people` lookup does not count as a
+  search.
+
+## Sources and prices
+
+Free:
+
+- `bh2 db companies --industry … --location … --size …`: companies our database holds, refreshed
+  within 3 months, not in the project, not judged. `total` says how many match.
+- `bh2 db people --company <id> … --title <words>`, or by industry and place: people with a
+  checked email we already hold.
+- Generect's database counts, `/search/database/companies/count/` and
+  `/search/database/leads/count/`: net of what the project holds.
+
+Paid, through `bh2 call <search> <provider> <path> --body '{…}'` (references/generect.md has the
+bodies, the fields each call takes, and what was measured):
+
+- Companies in Generect's database: `/search/database/companies/`, $0.0045 a row.
+- People in Generect's database: `/search/database/leads/`, $0.0045 a person, the cheapest. Rows
+  can be old: check each `updated_at`.
+- People on LinkedIn now: `/search/realtime/leads/` across companies, $0.007 a person (its count
+  costs $0.007 too); `/search/realtime/company-leads/` inside up to 50 listed companies a call,
+  $0.007 a person, where `limit_by` is people **per company** (50 companies × 3 people is 150
+  people, $1.05 at most).
+- One record: `/enrich/database/company/` or `/enrich/database/lead/`, $0.0045. Apollo's
+  `/people/match`, $0.0083 when it finds the person, gives their profile and often their work
+  address.
+- A web page: `bh2 read <search> <url>`, $0.0005, or $0.0025 with `--protected`
+  (references/web-pages.md).
+
+`bh2 calls` lists every call with its price. A page longer than bh2 prints is saved to
+`clients/<project>/calls/<callId>.json`; read it from there. `bh2 call show <callId>` reads a bought
+answer again for free.
+
+## Good defaults
+
+Defaults, not rules: change them when the ask needs it, and say why in the hand-over.
+
+- **A call you have not used in this search**: try it on the smallest page first and check the rows
+  are what you asked for. An ignored filter is paid for row by row (references/generect.md).
+- **Page size**: what lets you decide. 50–200 companies is usually enough to judge; thousands never
+  are.
+- **Out of budget**: a smaller page that still answers the question, or stop buying and ask for
+  more with `bh2 search plan <search> --budget <usd>`, saying how much and why.
+- **`already_bought`**: the same call was bought for this project within 30 days. `bh2 call show`
+  reads it for free; `--again` only when the data must be fresher than that.
+- **`unsure` is a valid verdict.** A company you cannot judge from what you have is `unsure`, with
+  what is missing. Do not guess `fit`.
+
+## The plan and the budget
+
+Write the plan for the person, in plain words (references are not for them): what you will look at,
+what you will buy, how many rows, at what price, and the most it can cost, counting up to $0.027 for
+each person you plan to save (their email search). Write "about 300 dental clinics in Texas, 10–50
+people, $1.35 at most", not filter names. Then
+`bh2 search plan <search> --file clients/<project>/<search>-plan.md --budget <usd>`, and tell the
+person in one message: the plan in three lines, the amount, and the link: "Open it and press
+Approve". Free work can go on while you wait; `bh2 search show <search>` says when
+`budgetApproved` is set. Only the button on the search's page approves, never a word in chat.
+
+## Saving
+
+- **Verdicts**: `bh2 companies save <search> --file clients/<project>/<search>-verdicts.json`, up to
+  500 at a time. A verdict adds nothing to the project: a fit company joins it with the first person
+  saved there, so the project holds only companies with a lead. A judged company is never bought
+  again.
+- **People**: `bh2 people save <search> --file clients/<project>/<search>-people.json`, a list of
+  `{"contactId"}` (from `bh2 db people`) or `{"callId", "salesId"}` (from a bought answer). A
+  person goes in only under a company the project holds or one you judged fit.
+- **An address you saw**: when an Apollo match or a page you read shows the person's own address,
+  add `"email"` and `"emailCallId"` (that call). The server checks it first and asks its sources
+  only if it fails, so Apollo is not paid twice. Never a guess, never a shared inbox (`info@`,
+  `office@`).
+- **Emails**: saving starts each person's email search at once, on the server: patterns, Hunter,
+  Apollo, then the quick check and, when it cannot tell, the deep check (a test email, up to ~10
+  minutes an address). Each person holds up to $0.027 of the budget until their email settles; most
+  cost under one cent. People the budget left cannot hold are refused (`email_budget`) and not
+  saved: ask for more budget, then save them again from the same answer. Nothing is bought twice.
+- **Closing**: `bh2 search show <search>` for the numbers, then `bh2 search done <search>`. Emails
+  settle on their own within minutes to an hour (`counts.emails.inProgress`); closing stops the
+  buying, not the email searches.
 
 ## Reading the answers
 
@@ -102,35 +153,11 @@ Read `bh2 brief` first (the getting-started skill). Everything below acts on the
 | `reservedUsd`                                      | `bh2 search show` | The part of `spentUsd` held for work still running: calls, and email searches not yet settled                                                                                 | It comes back as emails settle; wait for it before asking for more budget.                                    |
 | `refused`                                          | a save            | Inputs left out, by their place in your list, with a code                                                                                                                     | `employer_not_fit`: judge their company first, or leave them out; `employer_archived`: their company is archived in the project, so leave them out; `do_not_contact`: leave it; `row_not_found`: check the id; `row_not_savable`: the row names no employer, so find the person inside their company (company-leads, a persona for their title) and save that row; `email_not_in_answer`, `email_other_person`, `shared_inbox`: save them without `email`, or with the call that shows their own address. |
 
-## Decision rules
-
-- **Counts and our database before any page.** Never buy a page the count says is empty.
-- **One small page first** on a call you have not used in this search: `limit_by` 10, check the
-  rows are what you asked for, then the full page.
-- **Out of budget**: a smaller page that still answers the question is fine; otherwise stop
-  buying, write how much more is needed and why with `bh2 search plan --budget`, and ask the person
-  to approve it.
-- **`already_bought`**: the same call was bought for this project within 30 days. Read it with
-  `bh2 call show`; `--again` only when the data must be fresher than that.
-- **`unsure` is a valid verdict.** A company you cannot judge from what you have is `unsure` with
-  what is missing; a person sees it on the page. Do not guess `fit`.
-- **The person decides** the titles, the regions and anything that changes the budget. You decide
-  page sizes and the order of steps.
-
-## What to write back
-
-- Verdicts and people: the saves above. Nothing found is lost if it is saved.
-- The plan and any change to it: `bh2 search plan`.
-- The hand-over (getting-started): the search's slug and link, spent against approved, companies
-  by verdict, people added, what is left and what it would cost.
-
 ## Common mistakes
 
-- Buying before counting, or a 1,000-row page to judge 50 companies.
+- Buying a page before its count, or a 1,000-row page to judge 50 companies.
 - Reading `limit_by` on company-leads as a total: it is per company.
 - Judging from the name alone. A "dental" in the name is not evidence; the description, the
   industry or the website is.
-- Saving people before their company's verdict, or under a company you judged `not_fit`.
-- Asking the person to approve in chat. Only the button on the search's page approves.
-- Putting the plan for the person in Generect's terms. Write "about 300 dental clinics in Texas,
-  10–50 people, $1.35 at most", not filter names.
+- Judging hundreds of companies for a handful of people, when a people search would have needed
+  far fewer verdicts.
