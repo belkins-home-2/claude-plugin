@@ -91,14 +91,16 @@ a budget a person approves on the search's page in Belkins Home; you cannot appr
   companies save <search> --file <path|->
                                         your verdicts, a JSON list of {companyId | callId with
                                         linkedinId or domain | linkedinId | domain, verdict:
-                                        fit|not_fit|unsure, reason, evidence?: [{fact, value?, url?}]}.
-                                        A fit one joins the project with its first person saved
+                                        fit|not_fit|unsure, reason, evidence?: [{fact, value?, url?},
+                                        foundVia?]}. A fit one joins the project with its first person
+                                        saved. foundVia: the page read or Apollo match that led to it
   people save <search> --file <path|->
                                         a JSON list of {contactId} or {callId, salesId}: filed under
                                         companies the project holds or fit ones. Their email searches
                                         start at once, each holding up to $0.027 of the budget until it
                                         settles. Add email + emailCallId when an Apollo match or a page
-                                        read shows the person's own address: it is checked first
+                                        read shows the person's own address: it is checked first.
+                                        foundVia: the page read or Apollo match that led to them
   dnc check <value>... | --file <path|->
                                         which addresses, domains or websites the project must not
                                         contact

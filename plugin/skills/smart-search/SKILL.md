@@ -124,6 +124,9 @@ Approve". Free work can go on while you wait; `bh2 search show <search>` says wh
 - **People**: `bh2 people save <search> --file clients/<project>/<search>-people.json`, a list of
   `{"contactId"}` (from `bh2 db people`) or `{"callId", "salesId"}` (from a bought answer). A
   person goes in only under a company the project holds or one you judged fit.
+- **Where it was found**: when a page you read or an Apollo match led you to a company or a
+  person, add `"foundVia"` (that call) to its verdict or its save. The search's page shows where
+  each one came from; without it, the row's own call (or our database) says.
 - **An address you saw**: when an Apollo match or a page you read shows the person's own address,
   add `"email"` and `"emailCallId"` (that call). The server checks it first and asks its sources
   only if it fails, so Apollo is not paid twice. Never a guess, never a shared inbox (`info@`,
