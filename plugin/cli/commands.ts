@@ -47,6 +47,9 @@ with exit 1 (2 for a misused command); the hint says what to do next.
                                         its do-not-contact lists, what it holds, the last hand-overs
   handover --summary <text> | --file <path|->
                                        what this session leaves for the next: done, left, to watch
+  freeze [--dry-run]                   stop the project here as it moves to Belkins Home next: every
+                                        active campaign paused, its HubSpot sync off; prints what it
+                                        changed and frozenAt (an admin or a manager only)
   sql "<select …>" | --file <path|->  [--limit <n>]
                                         read anything else, read only: one SELECT over every table but
                                         the secrets (passwords, keys, tokens, credentials, sessions).
@@ -158,6 +161,7 @@ export async function main(argv: string[]): Promise<void> {
 				budget: { type: 'string' },
 				body: { type: 'string' },
 				again: { type: 'boolean' },
+				'dry-run': { type: 'boolean' },
 				out: { type: 'string' },
 				protected: { type: 'boolean' },
 				industry: { type: 'string', multiple: true },
@@ -298,6 +302,13 @@ export async function main(argv: string[]): Promise<void> {
 			}
 			return out(await call(config, 'POST', `/cli/projects/${p()}/handovers`, { summary }))
 		}
+
+		case 'freeze':
+			return out(
+				await call(config, 'POST', `/cli/projects/${p()}/freeze`, {
+					dryRun: o['dry-run'] === true,
+				}),
+			)
 
 		case 'sql':
 			return out(await sqlCommand(config, slug(), rest, o))
